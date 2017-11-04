@@ -30,8 +30,8 @@ public class Main extends JPanel implements ActionListener{
 
 	private static final long serialVersionUID = 1L;			
 
-	private JLabel machineLabel;								//JLabel is for titles	
-	private JLabel reflectorLabel;	
+	private JLabel machineLabel;								//JLabel is for titles
+	private JLabel reflectorLabel;
 	private JLabel wheelOrderLabel;
 	private JLabel ringSettingLabel;
 	private JLabel groundSettingLabel;
@@ -81,6 +81,7 @@ public class Main extends JPanel implements ActionListener{
 	private Hashtable<String, String[]> wheelOrderItems = new Hashtable<String, String[]>();
 	private Hashtable<String, String[]> reflectorItems = new Hashtable<String, String[]>();
 	private static String[] wheelOrderChoices1 = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII"};
+	private static String[] wheelOrderChoices2 = {"Beta", "Gamma"};
 	private static String[] ringSettingChoice = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	private Enigma enigma;
@@ -90,13 +91,16 @@ public class Main extends JPanel implements ActionListener{
 	private String[] ENIGMA_REFLECTORS = {Enigma.B, Enigma.C}; 
 	private String[] GREEK_REFLECTORS = {Enigma.B_THIN, Enigma.C_THIN};
 	
+	/**
+	 * Constructor that builds the GUI for the Enigma Machine
+	 */
 	public Main(){
 		setBackground(new Color(192, 192, 192));
 		//Create box layout for menus
 		Box labelBox = Box.createVerticalBox();				//Left-side label box
 		Box box1 = Box.createHorizontalBox();
 		Box choiceBox = Box.createVerticalBox();			//Right-side choice box
-		Box wheelOrderBox = Box.createHorizontalBox();		//Horizontal box for multiple menus	
+		Box wheelOrderBox = Box.createHorizontalBox();		//Horizontal box for multiple menus
 		Box ringSettingBox = Box.createHorizontalBox();
 		Box groundSettingBox = Box.createHorizontalBox();
 		box1.add(labelBox);
@@ -111,7 +115,6 @@ public class Main extends JPanel implements ActionListener{
 		machineComboBox = new JComboBox(comboModel);
 		machineComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		machineComboBox.setVisible(true);
-		//ActionListener allows for dynamic switching
 		machineComboBox.addActionListener(this);
 		labelBox.add(machineLabel);
 		choiceBox.add(machineComboBox);
@@ -148,12 +151,11 @@ public class Main extends JPanel implements ActionListener{
 		rightRotorComboBox = new JComboBox<String>(wheelOrderChoices1);
 		rightRotorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		wheelOrderBox.add(rightRotorComboBox);
-		greekRotorComboBox = new JComboBox<String>();
+		greekRotorComboBox = new JComboBox<String>(wheelOrderChoices2);
 		greekRotorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		wheelOrderBox.add(greekRotorComboBox);
 		greekRotorComboBox.setVisible(false);
 		wheelOrderItems.put(machineChoices[0], wheelOrderChoices1);
-		String[] wheelOrderChoices2 = {"Beta", "Gamma"};
 		wheelOrderItems.put(machineChoices[1], wheelOrderChoices2);
 		
 		verticalStrut_1 = Box.createVerticalStrut(20);
@@ -223,27 +225,24 @@ public class Main extends JPanel implements ActionListener{
 		plugboardLabel = new JLabel("Plugboard Connections: ");
 		plugboardLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
+		//Plugboard field
+		plugboardInput = new JFormattedTextField();
+		plugboardInput.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		((AbstractDocument) plugboardInput.getDocument()).setDocumentFilter(new DocumentFilter(){
+			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+				for (int i = 0; i < text.length(); i++) 
+					if( (text.charAt(i) < 'a' || text.charAt(i) > 'z') && (text.charAt(i) < 'A' || text.charAt(i) > 'Z') && text.charAt(0) != ' ')
+						return;
+				super.replace(fb, offset, length, text.toUpperCase(), attrs);
+				}
+			});
+		
 		inputLabel = new JLabel("Input: ");
 		inputLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
-		outputLabel = new JLabel("Output: ");
-		outputLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
-		
-		outputField = new JTextField();
-		outputField.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		outputField.setColumns(10);
-		outputField.setEditable(false);
-		
-		saveButton = new JButton("SAVE");
-		saveButton.setFont(new Font("Lucida Sans Typewriter", Font.BOLD, 15));
-		saveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				runEnigma();
-			}
-		});
-		
 		inputField = new JFormattedTextField();
 		inputField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		inputField.setEditable(false);
 		//Following lines allow only alphabets to be typed and auto-"CAPS" them
 		((AbstractDocument) inputField.getDocument()).setDocumentFilter(new DocumentFilter(){
 			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
@@ -253,7 +252,6 @@ public class Main extends JPanel implements ActionListener{
 				super.replace(fb, offset, length, text.toUpperCase(), attrs);
 			}
 		});
-		//Commented portion allows for dynamic updation of outputField
 		inputField.getDocument().addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent e) {
 				enigma.resetMachine();
@@ -268,17 +266,26 @@ public class Main extends JPanel implements ActionListener{
 			}
 			public void changedUpdate(DocumentEvent e) {}
 		});
-		inputField.setEditable(true);
 		
-		//Plugboard field
-		plugboardInput = new JFormattedTextField();
-		plugboardInput.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		((AbstractDocument) plugboardInput.getDocument()).setDocumentFilter(new DocumentFilter(){
-			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-				for (int i = 0; i < text.length(); i++) 
-					if( (text.charAt(i) < 'a' || text.charAt(i) > 'z') && (text.charAt(i) < 'A' || text.charAt(i) > 'Z') && text.charAt(0) != ' ')
-						return;
-				super.replace(fb, offset, length, text.toUpperCase(), attrs);
+		outputLabel = new JLabel("Output: ");
+		outputLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		
+		outputField = new JTextField();
+		outputField.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		outputField.setColumns(10);
+		outputField.setEditable(false);
+		
+		//Button to build machine
+		saveButton = new JButton("SAVE");
+		saveButton.setFont(new Font("Lucida Sans Typewriter", Font.BOLD, 15));
+		saveButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				inputField.setText("");
+				leftStateField.setText("");
+				rightStateField.setText("");
+				midStateField.setText("");
+				greekStateField.setText("");
+				runEnigma();
 			}
 		});
 		
@@ -399,7 +406,10 @@ public class Main extends JPanel implements ActionListener{
 		setLayout(groupLayout);
 	}
 
-	//Change menus based on type of machine
+	/*
+	 * Works on ActionListener of machineComboBox
+	 * Toggles between M3 and M4 options
+	 */
 	public void actionPerformed(ActionEvent e){
 		String item = (String)machineComboBox.getSelectedItem();
 		Object o1 = reflectorItems.get(item);
@@ -421,7 +431,7 @@ public class Main extends JPanel implements ActionListener{
 		else
 			rightRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
 		if(o1 == null)
-			rightRotorComboBox.setModel(new DefaultComboBoxModel());
+			greekRotorComboBox.setModel(new DefaultComboBoxModel());
 		else{
 			greekRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
 			if("M4".equals(item))
@@ -482,29 +492,49 @@ public class Main extends JPanel implements ActionListener{
 		}
 	}
 	
+	/**
+	 * Builds the Enigma machine based on the options selected in the GUI
+	 */
 	private void runEnigma() {
 		mType = machineComboBox.getSelectedItem().toString();
+		
+		if("M3".equals(mType)) {
+			if(!Enigma.isDistinct(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()])) {
+				inputField.setEditable(false);
+				outputField.setText("SELECT DISTINCT ROTORS!");
+			}
+			else {
+				inputField.setEditable(true);
+				outputField.setText("");
+			}
+		}
+		else {
+			if(!Enigma.isDistinct(ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()])) {
+				inputField.setEditable(false);
+				outputField.setText("SELECT DISTINCT ROTORS!");
+			}
+			else {
+				inputField.setEditable(true);
+				outputField.setText("");
+			}
+		}
 			
-		if(!Enigma.isDistinct(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()]))
-			outputField.setText("SELECT DISTINCT ROTORS!");
-		else
-			outputField.setText("");
 						
 		if("M4".equals(mType))
-			enigma = new Enigma(GREEK_ROTORS[greekRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], GREEK_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
+			enigma = new Enigma(GREEK_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()], GREEK_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
 		else
 			enigma = new Enigma(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
 		
 		if("M4".equals(mType)) {
-			enigma.getGreekRotor().setRingHead((char)greekRingComboBox.getSelectedItem());
-			enigma.getGreekRotor().setRotorHead((char)greekGroundComboBox.getSelectedItem());
+			enigma.getGreekRotor().setRingHead((char)leftRingComboBox.getSelectedItem().toString().charAt(0));
+			enigma.getGreekRotor().setRotorHead((char)leftGroundComboBox.getSelectedItem().toString().charAt(0));
 		}
-		enigma.getLeftRotor().setRingHead(leftRingComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getLeftRotor().setRotorHead((char)leftGroundComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getMidRotor().setRingHead((char)midRingComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getMidRotor().setRotorHead((char)midGroundComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getRightRotor().setRingHead((char)rightRingComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getRightRotor().setRotorHead((char)rightGroundComboBox.getSelectedItem().toString().charAt(0));
+		enigma.getLeftRotor().setRingHead(midRingComboBox.getSelectedItem().toString().charAt(0));
+		enigma.getLeftRotor().setRotorHead(midGroundComboBox.getSelectedItem().toString().charAt(0));
+		enigma.getMidRotor().setRingHead(rightRingComboBox.getSelectedItem().toString().charAt(0));
+		enigma.getMidRotor().setRotorHead(rightGroundComboBox.getSelectedItem().toString().charAt(0));
+		enigma.getRightRotor().setRingHead(greekRingComboBox.getSelectedItem().toString().charAt(0));
+		enigma.getRightRotor().setRotorHead(greekGroundComboBox.getSelectedItem().toString().charAt(0));
 		
 		enigma.resetPlugboard();
 		Scanner in = new Scanner(plugboardInput.getText());
@@ -517,8 +547,12 @@ public class Main extends JPanel implements ActionListener{
 					enigma.addPlugboardWire(src, dest);
 			}
 		}
+		in.close();
 	}
 	
+	/**
+	 * Updates the alphabet cycle for all stateField(s)
+	 */
 	private void updateStates() {
 		if("M4".equals(mType))
 			greekStateField.setText(enigma.getGreekRotor().getRotorHead() + "");
@@ -527,6 +561,9 @@ public class Main extends JPanel implements ActionListener{
 		rightStateField.setText(enigma.getRightRotor().getRotorHead() + "");
 	}
 
+	/**
+	 * Creates and runs the GUI
+	 */
 	private static void createAndShowUI(){
 		JFrame frame = new JFrame("Enigma Machine");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

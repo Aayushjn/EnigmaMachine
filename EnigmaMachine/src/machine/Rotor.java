@@ -9,7 +9,12 @@ public class Rotor {
 	private char notch2 = '?';								//Used only for rotors VI, VII and VIII
 	private int position;
 	
-	//Used for rotors VI, VII and VIII
+	/**
+	 * Used to build rotors VI, VII and VII
+	 * @param str    Rotor string
+	 * @param notch1 1st turnover notch
+	 * @param notch2 2nd turnover notch
+	 */
 	protected Rotor(String str, char notch1, char notch2) {
 		this.notch1 = notch1;
 		this.notch2 = notch2;
@@ -24,7 +29,11 @@ public class Rotor {
 		}
 	}
 	
-	//Used for rotors I, II, III, IV and V
+	/**
+	 * Used to build rotors I to V
+	 * @param str	Rotor string
+	 * @param notch Turnover notch
+	 */
 	protected Rotor(String str, char notch) {
 		notch1 = notch;
 		for(int i = 0;i < 26;i++) {
@@ -38,7 +47,10 @@ public class Rotor {
 		}
 	}
 	
-	//Used for Greek rotors
+	/**
+	 * Used to build Greek rotors
+	 * @param str Rotor string
+	 */
 	protected Rotor(String str) {
 		notch1 = '\0';
 		for(int i = 0;i < 26;i++) {
@@ -52,46 +64,67 @@ public class Rotor {
 		}
 	}
 	
-	//Initialize rotorHead and position
+	/**
+	 * Initialize rotor head and rotor position
+	 * @param c Letter on the rotor
+	 */
 	public void setRotorHead(char c) {
 		rotorHead = c - 'A';
 		position = 0;
 	}
 	
-	//Initialize ringHead
+	/**
+	 * Initialize ring head
+	 * @param c Letter on the ring
+	 */
 	public void setRingHead(char c) {
 		ringHead = c - 'A';
 	}
 	
-	//Returns notch (works only for M3 machine)
+	/**
+	 * Returns notch
+	 * @return char Returns notch of current rotor
+	 */
 	public char getNotch() {
 		//Checking for rotors VI, VII and VIII
 		if(this.notch2 == '?')
 			return this.notch1;
 		else {
-			if((this.getRotorHead() - this.notch1) < (this.getRotorHead() - this.notch2) || (this.notch1 - this.getRotorHead()) < (this.notch2 - this.getRotorHead()))
+			if(this.getRotorHead() <= this.notch1)
 				return this.notch1;
 			else
 				return this.notch2;
 		}
 	}
 	
-	//Returns character at rotorHead
+	/**
+	 * Returns the letter on rotor head
+	 * @return char This returns the letter on the rotor head
+	 */
 	public char getRotorHead() {
 		return (char)('A' + (rotorHead + position) % 26);
 	}
 	
-	//Returns character at ringHead
+	/**
+	 * Returns the letter on ring head
+	 * @return char This returns the letter on the ring head
+	 */
 	public char getRingHead() {
 		return (char)('A' + (ringHead + position) % 26);
 	}
 	
-	//Rotate after encrypting a letter
+	/**
+	 * Rotates rotor after encrypting letter
+	 */
 	protected void rotate() {
 		position = (position + 1) % 26;
 	}
 	
-	//Pass 1 encryption
+	/**
+	 * Performs a "forward rotate" on the rotor
+	 * @param pos Position to be moved forward
+	 * @return Returns rotated position
+	 */
 	protected int convertForward(int pos) {
 		int diff;
 		if(rotorHead >= ringHead)
@@ -101,7 +134,11 @@ public class Rotor {
 		return (pos + cipher[(pos + position + diff) % 26]) % 26;
 	}
 	
-	//Pass 2 encryption
+	/**
+	 * Performs a "backward rotate" on the rotor (Occurs during 2nd pass)
+	 * @param pos Position to be moved backward
+	 * @return Returns rotated position
+	 */
 	protected int convertBackward(int pos) {
 		int diff;
 		if(rotorHead >= ringHead)
@@ -115,7 +152,9 @@ public class Rotor {
 			return ((jump + 26) % 26);
 	}
 	
-	//Reset rotor position
+	/**
+	 * Resets rotor position
+	 */
 	public void reset() {
 		position = 0;
 	}
