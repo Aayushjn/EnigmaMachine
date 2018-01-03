@@ -2,8 +2,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.event.*;
-
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.Scanner;
 
@@ -21,12 +21,15 @@ import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.text.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 import machine.Enigma;
 
 
-public class Main extends JPanel implements ActionListener{
+public class Main extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;			
 
@@ -230,9 +233,10 @@ public class Main extends JPanel implements ActionListener{
 		plugboardInput.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		((AbstractDocument) plugboardInput.getDocument()).setDocumentFilter(new DocumentFilter(){
 			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-				for (int i = 0; i < text.length(); i++) 
+				for (int i = 0; i < text.length(); i++){
 					if( (text.charAt(i) < 'a' || text.charAt(i) > 'z') && (text.charAt(i) < 'A' || text.charAt(i) > 'Z') && text.charAt(0) != ' ')
 						return;
+				}
 				super.replace(fb, offset, length, text.toUpperCase(), attrs);
 				}
 			});
@@ -246,9 +250,10 @@ public class Main extends JPanel implements ActionListener{
 		//Following lines allow only alphabets to be typed and auto-"CAPS" them
 		((AbstractDocument) inputField.getDocument()).setDocumentFilter(new DocumentFilter(){
 			public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
-				for (int i = 0; i < text.length(); i++) 
+				for (int i = 0; i < text.length(); i++){
 					if( (text.charAt(i) < 'a' || text.charAt(i) > 'z') && (text.charAt(i) < 'A' || text.charAt(i) > 'Z') && text.charAt(0) != ' ')
 						return;
+				}
 				super.replace(fb, offset, length, text.toUpperCase(), attrs);
 			}
 		});
@@ -413,73 +418,102 @@ public class Main extends JPanel implements ActionListener{
 	public void actionPerformed(ActionEvent e){
 		String item = (String)machineComboBox.getSelectedItem();
 		Object o1 = reflectorItems.get(item);
-		if(o1 == null)
+		if(o1 == null){
 			reflectorComboBox.setModel(new DefaultComboBoxModel());
- 		else
+		}
+		else{
 			reflectorComboBox.setModel(new DefaultComboBoxModel((String[])o1));
+		}
 		o1 = wheelOrderItems.get(item);
-		if(o1 == null)
+		if(o1 == null){
 			leftRotorComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			leftRotorComboBox.setModel(new DefaultComboBoxModel((String[])o1));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			midRotorComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			midRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			rightRotorComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			rightRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			greekRotorComboBox.setModel(new DefaultComboBoxModel());
+		}
 		else{
 			greekRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
-			if("M4".equals(item))
+			if("M4".equals(item)){
 				greekRotorComboBox.setVisible(true);
-			else
+			}
+			else{
 				greekRotorComboBox.setVisible(false);
+			}
 		}
-		if(o1 == null)
+		if(o1 == null){
 			leftRingComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			leftRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			midRingComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			midRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			rightRingComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			rightRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			rightRingComboBox.setModel(new DefaultComboBoxModel());
+		}
 		else{
 			greekRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-			if("M4".equals(item))
+			if("M4".equals(item)){
 				greekRingComboBox.setVisible(true);
-			else
+			}
+			else{
 				greekRingComboBox.setVisible(false);
+			}
 		}
-		if(o1 == null)
+		if(o1 == null){
 			leftGroundComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			leftGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			midGroundComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			midGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			rightGroundComboBox.setModel(new DefaultComboBoxModel());
-		else
+		}
+		else{
 			rightGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		if(o1 == null)
+		}
+		if(o1 == null){
 			rightGroundComboBox.setModel(new DefaultComboBoxModel());
+		}
 		else{
 			greekGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-			if("M4".equals(item))
+			if("M4".equals(item)){
 				greekGroundComboBox.setVisible(true);
-			else
+			}
+			else{
 				greekGroundComboBox.setVisible(false);
+			}
 		}
 		
 		if("M4".equals(item)) {
@@ -520,10 +554,12 @@ public class Main extends JPanel implements ActionListener{
 		}
 			
 						
-		if("M4".equals(mType))
+		if("M4".equals(mType)){
 			enigma = new Enigma(GREEK_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()], GREEK_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
-		else
+		}
+		else{
 			enigma = new Enigma(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
+		}
 		
 		if("M4".equals(mType)) {
 			enigma.getGreekRotor().setRingHead((char)leftRingComboBox.getSelectedItem().toString().charAt(0));
@@ -543,8 +579,9 @@ public class Main extends JPanel implements ActionListener{
 			if(wire.length() == 2) {
 				char src = wire.charAt(0);
 				char dest = wire.charAt(1);
-				if(!enigma.isPlugged(src) && !enigma.isPlugged(dest) && src != dest)
+				if(!enigma.isPlugged(src) && !enigma.isPlugged(dest) && src != dest){
 					enigma.addPlugboardWire(src, dest);
+				}
 			}
 		}
 		in.close();
@@ -554,8 +591,9 @@ public class Main extends JPanel implements ActionListener{
 	 * Updates the alphabet cycle for all stateField(s)
 	 */
 	private void updateStates() {
-		if("M4".equals(mType))
+		if("M4".equals(mType)){
 			greekStateField.setText(enigma.getGreekRotor().getRotorHead() + "");
+		}
 		leftStateField.setText(enigma.getLeftRotor().getRotorHead() + "");
 		midStateField.setText(enigma.getMidRotor().getRotorHead() + "");
 		rightStateField.setText(enigma.getRightRotor().getRotorHead() + "");

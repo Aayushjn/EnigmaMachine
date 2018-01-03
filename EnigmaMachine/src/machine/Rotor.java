@@ -1,5 +1,7 @@
 package machine;
 
+import java.lang.Math;
+
 public class Rotor {
 	private int rotorHead;
 	private int ringHead;
@@ -90,7 +92,7 @@ public class Rotor {
 		if(this.notch2 == '?')
 			return this.notch1;
 		else {
-			if(this.getRotorHead() <= this.notch1)
+			if(Math.abs(this.getRotorHead() - this.notch1) < Math.abs(this.getRotorHead() - this.notch2))
 				return this.notch1;
 			else
 				return this.notch2;

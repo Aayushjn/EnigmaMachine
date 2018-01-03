@@ -30,6 +30,8 @@ public class Enigma {
 	public static final String B_THIN = "ENKQAUYWJICOPBLMDXZVFTHRGS";
 	public static final String C_THIN = "RDOBJNTKVEHMLFCWZAXGYIPSUQ";
 	
+	private StringBuilder sb = new StringBuilder();
+	
 	
 	/**
 	 * Builds an M3 Enigma machine
@@ -39,6 +41,7 @@ public class Enigma {
 	 * @param ref   Reflector
 	 */
 	public Enigma(String[] left, String[] mid, String[] right, String ref) {
+		this.machineType = "M3";
 		//Check for 1 notch or 2 notches
 		if(VI[0].equals(left[0]) || VII[0].equals(left[0]) || VIII[0].equals(left[0]))
 			this.leftRotor = new Rotor(left[0], left[1].charAt(0), left[1].charAt(2));
@@ -67,7 +70,8 @@ public class Enigma {
 	 * @param right	Right rotor
 	 * @param ref	Reflector
 	 */
-	public Enigma(String greek, String[] left, String[] mid, String[] right, String ref) {		
+	public Enigma(String greek, String[] left, String[] mid, String[] right, String ref) {
+		this.machineType = "M4";
 		this.greekRotor = new Rotor(greek);
 		if(VI[0].equals(left[0]) || VII[0].equals(left[0]) || VIII[0].equals(left[0]))
 			this.leftRotor = new Rotor(left[0], left[1].charAt(0), left[1].charAt(2));
@@ -106,13 +110,14 @@ public class Enigma {
 	 * @return String This returns the encrypted string
 	 */
 	public String print(String text) {
-		String output = "";
+		String output;
 		for(int i = 0;i < text.length();i++)
 			if(text.charAt(i) >= 'A' && text.charAt(i) <= 'Z')
-				output += rotorEncryption(text.charAt(i));
+				sb.append(rotorEncryption(text.charAt(i)));
 			else if(text.charAt(i) == ' ' || text.charAt(i) == '\n')
-				output += text.charAt(i);
-		return output;
+				sb.append(text.charAt(i));
+		output = sb.toString();
+		return (output.substring(output.length() - text.length(), output.length()));
 	}
 	
 	/**
