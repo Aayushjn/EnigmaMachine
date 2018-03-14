@@ -1,5 +1,5 @@
 # EnigmaMachineSimulator
-Enigma Machine Simulator using Java
+Enigma Machine Simulator in Java (Swing GUI) and Android (Java)
 
 Goto "src" folder and run Main.java normally in terminal or IDE
 
