@@ -2,13 +2,13 @@ package Machine;
 
 public class Enigma {
     //Machine configuration
-    private String machineType;
-    private Rotor rightRotor;
-    private Rotor midRotor;
-    private Rotor leftRotor;
+    private final String machineType;
+    private final Rotor rightRotor;
+    private final Rotor midRotor;
+    private final Rotor leftRotor;
     private Rotor greekRotor;
-    private Reflector reflector;
-    private int[] plugboard;
+    private final Reflector reflector;
+    private final int[] plugboard;
 
     //Available rotors
     public static final String[] I = {"EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"};
@@ -30,7 +30,7 @@ public class Enigma {
     public static final String B_THIN = "ENKQAUYWJICOPBLMDXZVFTHRGS";
     public static final String C_THIN = "RDOBJNTKVEHMLFCWZAXGYIPSUQ";
 
-    private StringBuilder sb = new StringBuilder();
+    private final StringBuilder sb = new StringBuilder();
 
 
     /**
@@ -219,8 +219,8 @@ public class Enigma {
      * @param c Letter to be checked
      * @return boolean This returns true if letter is already connected, else returns false
      */
-    public boolean isPlugged(char c) {
-        return plugboard[c - 'A'] != -1;
+    public boolean isNotPlugged(char c) {
+        return plugboard[c - 'A'] == -1;
     }
 
     /**

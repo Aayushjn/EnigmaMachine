@@ -1,7 +1,7 @@
 package Machine;
 
-public class Reflector {
-    private int[] reflection = new int[26];
+class Reflector {
+    private final int[] reflection = new int[26];
 
     /**
      * Builds reflector
@@ -23,7 +23,7 @@ public class Reflector {
      * @param pos Position to be moved forward
      * @return Returns rotated position
      */
-    protected int convertForward(int pos) {
+    int convertForward(int pos) {
         return ((pos + reflection[pos]) % 26);
     }
 }

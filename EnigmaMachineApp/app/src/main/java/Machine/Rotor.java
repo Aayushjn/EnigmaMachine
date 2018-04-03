@@ -5,9 +5,9 @@ import java.lang.Math;
 public class Rotor {
     private int rotorHead;
     private int ringHead;
-    private int[] cipher = new int[26];						//Used for 1st pass during encryption
-    private int[] revCipher = new int[26];					//Used for 2nd pass during encryption
-    private char notch1;
+    private final int[] cipher = new int[26];						//Used for 1st pass during encryption
+    private final int[] revCipher = new int[26];					//Used for 2nd pass during encryption
+    private final char notch1;
     private char notch2 = '?';								//Used only for rotors VI, VII and VIII
     private int position;
 
@@ -17,7 +17,7 @@ public class Rotor {
      * @param notch1 1st turnover notch
      * @param notch2 2nd turnover notch
      */
-    protected Rotor(String str, char notch1, char notch2) {
+    Rotor(String str, char notch1, char notch2) {
         this.notch1 = notch1;
         this.notch2 = notch2;
         for(int i = 0;i < 26;i++) {
@@ -36,7 +36,7 @@ public class Rotor {
      * @param str	Rotor string
      * @param notch Turnover notch
      */
-    protected Rotor(String str, char notch) {
+    Rotor(String str, char notch) {
         notch1 = notch;
         for(int i = 0;i < 26;i++) {
             int src = (char)('A' + i);
@@ -53,7 +53,7 @@ public class Rotor {
      * Used to build Greek rotors
      * @param str Rotor string
      */
-    protected Rotor(String str) {
+    Rotor(String str) {
         notch1 = '\0';
         for(int i = 0;i < 26;i++) {
             int src = (char)('A' + i);
@@ -118,7 +118,7 @@ public class Rotor {
     /**
      * Rotates rotor after encrypting letter
      */
-    protected void rotate() {
+    void rotate() {
         position = (position + 1) % 26;
     }
 
@@ -127,7 +127,7 @@ public class Rotor {
      * @param pos Position to be moved forward
      * @return Returns rotated position
      */
-    protected int convertForward(int pos) {
+    int convertForward(int pos) {
         int diff;
         if(rotorHead >= ringHead)
             diff = rotorHead - ringHead;
@@ -141,7 +141,7 @@ public class Rotor {
      * @param pos Position to be moved backward
      * @return Returns rotated position
      */
-    protected int convertBackward(int pos) {
+    int convertBackward(int pos) {
         int diff;
         if(rotorHead >= ringHead)
             diff = rotorHead - ringHead;

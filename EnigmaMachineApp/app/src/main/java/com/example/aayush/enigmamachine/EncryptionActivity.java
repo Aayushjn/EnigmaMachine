@@ -27,9 +27,9 @@ public class EncryptionActivity extends AppCompatActivity {
     private int rightGroundChoice;
     private int reflectorChoice;
 
-    private String[][] ENIGMA_ROTORS = {Enigma.I, Enigma.II, Enigma.III, Enigma.IV,
+    private final String[][] ENIGMA_ROTORS = {Enigma.I, Enigma.II, Enigma.III, Enigma.IV,
             Enigma.V, Enigma.VI, Enigma.VII, Enigma.VIII};
-    private String[] ENIGMA_REFLECTORS = {Enigma.B, Enigma.C};
+    private final String[] ENIGMA_REFLECTORS = {Enigma.B, Enigma.C};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +101,7 @@ public class EncryptionActivity extends AppCompatActivity {
             if(wire.length() == 2) {
                 char src = wire.charAt(0);
                 char dest = wire.charAt(1);
-                if (!enigma.isPlugged(src) && !enigma.isPlugged(dest) && src != dest) {
+                if (enigma.isNotPlugged(src) && enigma.isNotPlugged(dest) && src != dest) {
                     enigma.addPlugboardWire(src, dest);
                 }
             }
