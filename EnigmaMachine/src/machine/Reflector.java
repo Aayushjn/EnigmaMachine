@@ -1,13 +1,13 @@
 package machine;
 
-public class Reflector {
+class Reflector {
 	private int[] reflection = new int[26];
 	
 	/**
 	 * Builds reflector
 	 * @param reflector Reflector
 	 */
-	public Reflector(String reflector) {
+	Reflector(String reflector) {
 		for(int i = 0;i < 26;i++) {
 			int src = (char)('A' + i);
 			int dest = reflector.charAt(i);
@@ -23,7 +23,7 @@ public class Reflector {
 	 * @param pos Position to be moved forward
 	 * @return Returns rotated position
 	 */
-	protected int convertForward(int pos) {
+	int convertForward(int pos) {
 		return ((pos + reflection[pos]) % 26);
 	}
 }

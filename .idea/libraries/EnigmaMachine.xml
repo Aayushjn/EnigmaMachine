@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="EnigmaMachine">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/EnigmaMachine/miglayout15-swing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/EnigmaMachine/miglayout-src.zip!/" />
+      <root url="jar://$PROJECT_DIR$/EnigmaMachine/jgoodies-forms-1.8.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/EnigmaMachine/jgoodies-forms-1.8.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

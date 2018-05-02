@@ -1,23 +1,7 @@
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.EventQueue;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Hashtable;
-import java.util.Scanner;
+import machine.Enigma;
 
-import javax.swing.Box;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
+import javax.swing.*;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -25,29 +9,21 @@ import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Hashtable;
+import java.util.Objects;
+import java.util.Scanner;
 
-import machine.Enigma;
 
+class Main extends JPanel implements ActionListener {
 
-public class Main extends JPanel implements ActionListener {
-
-	private static final long serialVersionUID = 1L;			
-
-	private JLabel machineLabel;								//JLabel is for titles
-	private JLabel reflectorLabel;
-	private JLabel wheelOrderLabel;
-	private JLabel ringSettingLabel;
-	private JLabel groundSettingLabel;
-	private JLabel plugboardLabel;
-	private JLabel inputLabel;
-	private JLabel outputLabel;
-	private JLabel leftStateLabel;
-	private JLabel midStateLabel;
-	private JLabel rightStateLabel;
+	private static final long serialVersionUID = 1L;
+	private static String[] wheelOrderChoices1 = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII"};
+	private static String[] wheelOrderChoices2 = {"Beta", "Gamma"};
+	private static String[] ringSettingChoice = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	private JLabel greekStateLabel;
-	
-	private JButton saveButton;
-	
 	private JComboBox<String> machineComboBox;					//JComboBox is for menus
 	private JComboBox<String> reflectorComboBox;
 	private JComboBox<String> leftRotorComboBox;
@@ -62,7 +38,6 @@ public class Main extends JPanel implements ActionListener {
 	private JComboBox<String> midGroundComboBox;
 	private JComboBox<String> rightGroundComboBox;
 	private JComboBox<String> greekGroundComboBox;
-	
 	private JTextField outputField;
 	private JFormattedTextField inputField;						//JFormattedTextField for allowing specific characters only
 	private JFormattedTextField plugboardInput;
@@ -70,23 +45,9 @@ public class Main extends JPanel implements ActionListener {
 	private JTextField leftStateField;
 	private JTextField midStateField;
 	private JTextField rightStateField;
-	
-	private Component verticalStrut;							//For vertical gaps
-	private Component verticalStrut_1;
-	private Component verticalStrut_2;
-	private Component verticalStrut_3;
-	private Component verticalGlue;								//For relative (to vertical struts) vertical gaps
-	private Component verticalGlue_1;
-	private Component verticalGlue_2;
-	private Component verticalGlue_3;
-	
 	//Hashtables for dynamic choices
-	private Hashtable<String, String[]> wheelOrderItems = new Hashtable<String, String[]>();
-	private Hashtable<String, String[]> reflectorItems = new Hashtable<String, String[]>();
-	private static String[] wheelOrderChoices1 = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII"};
-	private static String[] wheelOrderChoices2 = {"Beta", "Gamma"};
-	private static String[] ringSettingChoice = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
-	
+	private Hashtable<String, String[]> wheelOrderItems = new Hashtable<>();
+	private Hashtable<String, String[]> reflectorItems = new Hashtable<>();
 	private Enigma enigma;
 	private String mType;
 	private String[][] ENIGMA_ROTORS = {Enigma.I, Enigma.II, Enigma.III, Enigma.IV, Enigma.V, Enigma.VI, Enigma.VII, Enigma.VIII};
@@ -97,7 +58,7 @@ public class Main extends JPanel implements ActionListener {
 	/**
 	 * Constructor that builds the GUI for the Enigma Machine
 	 */
-	public Main(){
+	private Main(){
 		setBackground(new Color(192, 192, 192));
 		//Create box layout for menus
 		Box labelBox = Box.createVerticalBox();				//Left-side label box
@@ -110,12 +71,13 @@ public class Main extends JPanel implements ActionListener {
 		box1.add(choiceBox);
 
 		//Machine type
-		machineLabel = new JLabel("Enigma type: ");
+		//JLabel is for titles
+		JLabel machineLabel = new JLabel("Enigma type: ");
 		machineLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
 		machineLabel.setVisible(true);
 		String[] machineChoices = {"M3", "M4"};
-		DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<String>(machineChoices);
-		machineComboBox = new JComboBox(comboModel);
+		DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>(machineChoices);
+		machineComboBox = new JComboBox<>(comboModel);
 		machineComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		machineComboBox.setVisible(true);
 		machineComboBox.addActionListener(this);
@@ -123,109 +85,111 @@ public class Main extends JPanel implements ActionListener {
 		choiceBox.add(machineComboBox);
 		
 		//Reflector type
-		reflectorLabel = new JLabel("Reflector: ");
+		JLabel reflectorLabel = new JLabel("Reflector: ");
 		reflectorLabel.setFont(new Font("", Font.PLAIN, 20));
 		reflectorLabel.setVisible(true);
 		String[] reflectorChoices1 = {"B", "C"};
 		reflectorItems.put(machineChoices[0], reflectorChoices1);
 		String[] reflectorChoices2 = {"B (thin)", "C (thin)"};
 		reflectorItems.put(machineChoices[1], reflectorChoices2);
-		reflectorComboBox = new JComboBox<String>(reflectorChoices1);
+		reflectorComboBox = new JComboBox<>(reflectorChoices1);
 		reflectorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
-		
-		verticalStrut = Box.createVerticalStrut(20);
+
+		//For vertical gaps
+		Component verticalStrut = Box.createVerticalStrut(20);
 		labelBox.add(verticalStrut);
 		labelBox.add(reflectorLabel);
-		
-		verticalGlue = Box.createVerticalGlue();
+
+		//For relative (to vertical struts) vertical gaps
+		Component verticalGlue = Box.createVerticalGlue();
 		choiceBox.add(verticalGlue);
 		choiceBox.add(reflectorComboBox);
 
 		//Wheel order
-		wheelOrderLabel = new JLabel("Wheel Order: ");
+		JLabel wheelOrderLabel = new JLabel("Wheel Order: ");
 		wheelOrderLabel.setFont(new Font("", Font.PLAIN, 20));
 		wheelOrderLabel.setVisible(true);
-		leftRotorComboBox = new JComboBox<String>(wheelOrderChoices1);
+		leftRotorComboBox = new JComboBox<>(wheelOrderChoices1);
 		leftRotorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		wheelOrderBox.add(leftRotorComboBox);
-		midRotorComboBox = new JComboBox<String>(wheelOrderChoices1);
+		midRotorComboBox = new JComboBox<>(wheelOrderChoices1);
 		midRotorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		wheelOrderBox.add(midRotorComboBox);
-		rightRotorComboBox = new JComboBox<String>(wheelOrderChoices1);
+		rightRotorComboBox = new JComboBox<>(wheelOrderChoices1);
 		rightRotorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		wheelOrderBox.add(rightRotorComboBox);
-		greekRotorComboBox = new JComboBox<String>(wheelOrderChoices2);
+		greekRotorComboBox = new JComboBox<>(wheelOrderChoices2);
 		greekRotorComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		wheelOrderBox.add(greekRotorComboBox);
 		greekRotorComboBox.setVisible(false);
 		wheelOrderItems.put(machineChoices[0], wheelOrderChoices1);
 		wheelOrderItems.put(machineChoices[1], wheelOrderChoices2);
-		
-		verticalStrut_1 = Box.createVerticalStrut(20);
+
+		Component verticalStrut_1 = Box.createVerticalStrut(20);
 		labelBox.add(verticalStrut_1);
 		labelBox.add(wheelOrderLabel);
-		
-		verticalGlue_1 = Box.createVerticalGlue();
+
+		Component verticalGlue_1 = Box.createVerticalGlue();
 		choiceBox.add(verticalGlue_1);
 		choiceBox.add(wheelOrderBox);
 
 		//Ring settings
-		ringSettingLabel = new JLabel("Ring Settings: ");
+		JLabel ringSettingLabel = new JLabel("Ring Settings: ");
 		ringSettingLabel.setFont(new Font("", Font.PLAIN, 20));
 		ringSettingLabel.setVisible(true);
-		leftRingComboBox = new JComboBox<String>(ringSettingChoice);
+		leftRingComboBox = new JComboBox<>(ringSettingChoice);
 		leftRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		ringSettingBox.add(leftRingComboBox);
-		midRingComboBox = new JComboBox<String>(ringSettingChoice);
+		midRingComboBox = new JComboBox<>(ringSettingChoice);
 		midRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		ringSettingBox.add(midRingComboBox);
-		rightRingComboBox = new JComboBox<String>(ringSettingChoice);
+		rightRingComboBox = new JComboBox<>(ringSettingChoice);
 		rightRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		ringSettingBox.add(rightRingComboBox);
-		greekRingComboBox = new JComboBox<String>(ringSettingChoice);
+		greekRingComboBox = new JComboBox<>(ringSettingChoice);
 		greekRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		ringSettingBox.add(greekRingComboBox);
 		greekRingComboBox.setVisible(false);
-		
-		verticalStrut_2 = Box.createVerticalStrut(20);
+
+		Component verticalStrut_2 = Box.createVerticalStrut(20);
 		labelBox.add(verticalStrut_2);
 		labelBox.add(ringSettingLabel);
-		
-		verticalGlue_2 = Box.createVerticalGlue();
+
+		Component verticalGlue_2 = Box.createVerticalGlue();
 		choiceBox.add(verticalGlue_2);
 		choiceBox.add(ringSettingBox);
 		
 		//Ground settings
-		groundSettingLabel = new JLabel("Ground Settings: ");
+		JLabel groundSettingLabel = new JLabel("Ground Settings: ");
 		groundSettingLabel.setFont(new Font("", Font.PLAIN, 20));
 		groundSettingLabel.setVisible(true);
-		leftGroundComboBox = new JComboBox<String>(ringSettingChoice);
+		leftGroundComboBox = new JComboBox<>(ringSettingChoice);
 		leftGroundComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		leftRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		groundSettingBox.add(leftGroundComboBox);
-		midGroundComboBox = new JComboBox<String>(ringSettingChoice);
+		midGroundComboBox = new JComboBox<>(ringSettingChoice);
 		midGroundComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		midRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		groundSettingBox.add(midGroundComboBox);
-		rightGroundComboBox = new JComboBox<String>(ringSettingChoice);
+		rightGroundComboBox = new JComboBox<>(ringSettingChoice);
 		rightGroundComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		rightRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		groundSettingBox.add(rightGroundComboBox);
-		greekGroundComboBox = new JComboBox<String>(ringSettingChoice);
+		greekGroundComboBox = new JComboBox<>(ringSettingChoice);
 		greekGroundComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		greekRingComboBox.setFont(new Font("Tahoma", Font.PLAIN, 15));
 		groundSettingBox.add(greekGroundComboBox);
 		greekGroundComboBox.setVisible(false);
-		
-		verticalStrut_3 = Box.createVerticalStrut(20);
+
+		Component verticalStrut_3 = Box.createVerticalStrut(20);
 		labelBox.add(verticalStrut_3);
 		labelBox.add(groundSettingLabel);
-		
-		verticalGlue_3 = Box.createVerticalGlue();
+
+		Component verticalGlue_3 = Box.createVerticalGlue();
 		choiceBox.add(verticalGlue_3);
 		choiceBox.add(groundSettingBox);
-		
-		plugboardLabel = new JLabel("Plugboard Connections: ");
+
+		JLabel plugboardLabel = new JLabel("Plugboard Connections: ");
 		plugboardLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		//Plugboard field
@@ -240,8 +204,8 @@ public class Main extends JPanel implements ActionListener {
 				super.replace(fb, offset, length, text.toUpperCase(), attrs);
 				}
 			});
-		
-		inputLabel = new JLabel("Input: ");
+
+		JLabel inputLabel = new JLabel("Input: ");
 		inputLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		inputField = new JFormattedTextField();
@@ -271,8 +235,8 @@ public class Main extends JPanel implements ActionListener {
 			}
 			public void changedUpdate(DocumentEvent e) {}
 		});
-		
-		outputLabel = new JLabel("Output: ");
+
+		JLabel outputLabel = new JLabel("Output: ");
 		outputLabel.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		
 		outputField = new JTextField();
@@ -281,26 +245,24 @@ public class Main extends JPanel implements ActionListener {
 		outputField.setEditable(false);
 		
 		//Button to build machine
-		saveButton = new JButton("SAVE");
+		JButton saveButton = new JButton("SAVE");
 		saveButton.setFont(new Font("Lucida Sans Typewriter", Font.BOLD, 15));
-		saveButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				inputField.setText("");
-				leftStateField.setText("");
-				rightStateField.setText("");
-				midStateField.setText("");
-				greekStateField.setText("");
-				runEnigma();
-			}
+		saveButton.addActionListener(e -> {
+			inputField.setText("");
+			leftStateField.setText("");
+			rightStateField.setText("");
+			midStateField.setText("");
+			greekStateField.setText("");
+			runEnigma();
 		});
-		
-		leftStateLabel = new JLabel("Left State:");
+
+		JLabel leftStateLabel = new JLabel("Left State:");
 		leftStateLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
-		
-		midStateLabel = new JLabel("Middle State:");
+
+		JLabel midStateLabel = new JLabel("Middle State:");
 		midStateLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
-		
-		rightStateLabel = new JLabel("Right State: ");
+
+		JLabel rightStateLabel = new JLabel("Right State: ");
 		rightStateLabel.setFont(new Font("Dialog", Font.PLAIN, 20));
 		
 		greekStateLabel = new JLabel("Greek State:");
@@ -411,194 +373,6 @@ public class Main extends JPanel implements ActionListener {
 		setLayout(groupLayout);
 	}
 
-	/*
-	 * Works on ActionListener of machineComboBox
-	 * Toggles between M3 and M4 options
-	 */
-	public void actionPerformed(ActionEvent e){
-		String item = (String)machineComboBox.getSelectedItem();
-		Object o1 = reflectorItems.get(item);
-		if(o1 == null){
-			reflectorComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			reflectorComboBox.setModel(new DefaultComboBoxModel((String[])o1));
-		}
-		o1 = wheelOrderItems.get(item);
-		if(o1 == null){
-			leftRotorComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			leftRotorComboBox.setModel(new DefaultComboBoxModel((String[])o1));
-		}
-		if(o1 == null){
-			midRotorComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			midRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
-		}
-		if(o1 == null){
-			rightRotorComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			rightRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
-		}
-		if(o1 == null){
-			greekRotorComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			greekRotorComboBox.setModel(new DefaultComboBoxModel(wheelOrderChoices1));
-			if("M4".equals(item)){
-				greekRotorComboBox.setVisible(true);
-			}
-			else{
-				greekRotorComboBox.setVisible(false);
-			}
-		}
-		if(o1 == null){
-			leftRingComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			leftRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		}
-		if(o1 == null){
-			midRingComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			midRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		}
-		if(o1 == null){
-			rightRingComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			rightRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		}
-		if(o1 == null){
-			rightRingComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			greekRingComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-			if("M4".equals(item)){
-				greekRingComboBox.setVisible(true);
-			}
-			else{
-				greekRingComboBox.setVisible(false);
-			}
-		}
-		if(o1 == null){
-			leftGroundComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			leftGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		}
-		if(o1 == null){
-			midGroundComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			midGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		}
-		if(o1 == null){
-			rightGroundComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			rightGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-		}
-		if(o1 == null){
-			rightGroundComboBox.setModel(new DefaultComboBoxModel());
-		}
-		else{
-			greekGroundComboBox.setModel(new DefaultComboBoxModel(ringSettingChoice));
-			if("M4".equals(item)){
-				greekGroundComboBox.setVisible(true);
-			}
-			else{
-				greekGroundComboBox.setVisible(false);
-			}
-		}
-		
-		if("M4".equals(item)) {
-			greekStateLabel.setVisible(true);
-			greekStateField.setVisible(true);
-		}
-		else {
-			greekStateLabel.setVisible(false);
-			greekStateField.setVisible(false);
-		}
-	}
-	
-	/**
-	 * Builds the Enigma machine based on the options selected in the GUI
-	 */
-	private void runEnigma() {
-		mType = machineComboBox.getSelectedItem().toString();
-		
-		if("M3".equals(mType)) {
-			if(!Enigma.isDistinct(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()])) {
-				inputField.setEditable(false);
-				outputField.setText("SELECT DISTINCT ROTORS!");
-			}
-			else {
-				inputField.setEditable(true);
-				outputField.setText("");
-			}
-		}
-		else {
-			if(!Enigma.isDistinct(ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()])) {
-				inputField.setEditable(false);
-				outputField.setText("SELECT DISTINCT ROTORS!");
-			}
-			else {
-				inputField.setEditable(true);
-				outputField.setText("");
-			}
-		}
-			
-						
-		if("M4".equals(mType)){
-			enigma = new Enigma(GREEK_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()], GREEK_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
-		}
-		else{
-			enigma = new Enigma(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
-		}
-		
-		if("M4".equals(mType)) {
-			enigma.getGreekRotor().setRingHead((char)leftRingComboBox.getSelectedItem().toString().charAt(0));
-			enigma.getGreekRotor().setRotorHead((char)leftGroundComboBox.getSelectedItem().toString().charAt(0));
-		}
-		enigma.getLeftRotor().setRingHead(midRingComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getLeftRotor().setRotorHead(midGroundComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getMidRotor().setRingHead(rightRingComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getMidRotor().setRotorHead(rightGroundComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getRightRotor().setRingHead(greekRingComboBox.getSelectedItem().toString().charAt(0));
-		enigma.getRightRotor().setRotorHead(greekGroundComboBox.getSelectedItem().toString().charAt(0));
-		
-		enigma.resetPlugboard();
-		Scanner in = new Scanner(plugboardInput.getText());
-		while(in.hasNext()) {
-			String wire = in.next();
-			if(wire.length() == 2) {
-				char src = wire.charAt(0);
-				char dest = wire.charAt(1);
-				if(!enigma.isPlugged(src) && !enigma.isPlugged(dest) && src != dest){
-					enigma.addPlugboardWire(src, dest);
-				}
-			}
-		}
-		in.close();
-	}
-	
-	/**
-	 * Updates the alphabet cycle for all stateField(s)
-	 */
-	private void updateStates() {
-		if("M4".equals(mType)){
-			greekStateField.setText(enigma.getGreekRotor().getRotorHead() + "");
-		}
-		leftStateField.setText(enigma.getLeftRotor().getRotorHead() + "");
-		midStateField.setText(enigma.getMidRotor().getRotorHead() + "");
-		rightStateField.setText(enigma.getRightRotor().getRotorHead() + "");
-	}
-
 	/**
 	 * Creates and runs the GUI
 	 */
@@ -610,13 +384,204 @@ public class Main extends JPanel implements ActionListener {
 		frame.pack();
 		frame.setVisible(true);
 	}
-
+	
 	public static void main(String[] args){
-		EventQueue.invokeLater(new Runnable(){
-			public void run(){
-				createAndShowUI();
-				System.gc();
-			}
+		EventQueue.invokeLater(() -> {
+			createAndShowUI();
+			System.gc();
 		});
+	}
+	
+	/*
+	 * Works on ActionListener of machineComboBox
+	 * Toggles between M3 and M4 options
+	 */
+	public void actionPerformed(ActionEvent e){
+		String item = (String)machineComboBox.getSelectedItem();
+		Object o1 = null;
+		if (item != null) {
+			o1 = reflectorItems.get(item);
+		}
+		if(o1 == null){
+			reflectorComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			reflectorComboBox.setModel(new DefaultComboBoxModel<>((String[])o1));
+		}
+		if (item != null) {
+			o1 = wheelOrderItems.get(item);
+		}
+		if(o1 == null){
+			leftRotorComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			leftRotorComboBox.setModel(new DefaultComboBoxModel<>((String[])o1));
+		}
+		if(o1 == null){
+			midRotorComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			midRotorComboBox.setModel(new DefaultComboBoxModel<>(wheelOrderChoices1));
+		}
+		if(o1 == null){
+			rightRotorComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			rightRotorComboBox.setModel(new DefaultComboBoxModel<>(wheelOrderChoices1));
+		}
+		if(o1 == null){
+			greekRotorComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			greekRotorComboBox.setModel(new DefaultComboBoxModel<>(wheelOrderChoices1));
+			if("M4".equals(item)){
+				greekRotorComboBox.setVisible(true);
+			}
+			else{
+				greekRotorComboBox.setVisible(false);
+			}
+		}
+		if(o1 == null){
+			leftRingComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			leftRingComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+		}
+		if(o1 == null){
+			midRingComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			midRingComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+		}
+		if(o1 == null){
+			rightRingComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			rightRingComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+		}
+		if(o1 == null){
+			rightRingComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			greekRingComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+			if("M4".equals(item)){
+				greekRingComboBox.setVisible(true);
+			}
+			else{
+				greekRingComboBox.setVisible(false);
+			}
+		}
+		if(o1 == null){
+			leftGroundComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			leftGroundComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+		}
+		if(o1 == null){
+			midGroundComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			midGroundComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+		}
+		if(o1 == null){
+			rightGroundComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			rightGroundComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+		}
+		if(o1 == null){
+			rightGroundComboBox.setModel(new DefaultComboBoxModel<>());
+		}
+		else{
+			greekGroundComboBox.setModel(new DefaultComboBoxModel<>(ringSettingChoice));
+			if("M4".equals(item)){
+				greekGroundComboBox.setVisible(true);
+			}
+			else{
+				greekGroundComboBox.setVisible(false);
+			}
+		}
+
+		if("M4".equals(item)) {
+			greekStateLabel.setVisible(true);
+			greekStateField.setVisible(true);
+		}
+		else {
+			greekStateLabel.setVisible(false);
+			greekStateField.setVisible(false);
+		}
+	}
+
+	/**
+	 * Builds the Enigma machine based on the options selected in the GUI
+	 */
+	private void runEnigma() {
+		mType = Objects.requireNonNull(machineComboBox.getSelectedItem()).toString();
+
+		if("M3".equals(mType)) {
+			if(Enigma.isNotDistinct(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()])) {
+				inputField.setEditable(false);
+				outputField.setText("SELECT DISTINCT ROTORS!");
+			}
+			else {
+				inputField.setEditable(true);
+				outputField.setText("");
+			}
+		}
+		else {
+			if(Enigma.isNotDistinct(ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()])) {
+				inputField.setEditable(false);
+				outputField.setText("SELECT DISTINCT ROTORS!");
+			}
+			else {
+				inputField.setEditable(true);
+				outputField.setText("");
+			}
+		}
+
+
+		if("M4".equals(mType)){
+			enigma = new Enigma(GREEK_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[greekRotorComboBox.getSelectedIndex()], GREEK_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
+		}
+		else{
+			enigma = new Enigma(ENIGMA_ROTORS[leftRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[midRotorComboBox.getSelectedIndex()], ENIGMA_ROTORS[rightRotorComboBox.getSelectedIndex()], ENIGMA_REFLECTORS[reflectorComboBox.getSelectedIndex()]);
+		}
+
+		if("M4".equals(mType)) {
+			enigma.getGreekRotor().setRingHead(Objects.requireNonNull(leftRingComboBox.getSelectedItem()).toString().charAt(0));
+			enigma.getGreekRotor().setRotorHead(Objects.requireNonNull(leftGroundComboBox.getSelectedItem()).toString().charAt(0));
+		}
+		enigma.getLeftRotor().setRingHead(Objects.requireNonNull(midRingComboBox.getSelectedItem()).toString().charAt(0));
+		enigma.getLeftRotor().setRotorHead(Objects.requireNonNull(midGroundComboBox.getSelectedItem()).toString().charAt(0));
+		enigma.getMidRotor().setRingHead(Objects.requireNonNull(rightRingComboBox.getSelectedItem()).toString().charAt(0));
+		enigma.getMidRotor().setRotorHead(Objects.requireNonNull(rightGroundComboBox.getSelectedItem()).toString().charAt(0));
+		enigma.getRightRotor().setRingHead(Objects.requireNonNull(greekRingComboBox.getSelectedItem()).toString().charAt(0));
+		enigma.getRightRotor().setRotorHead(Objects.requireNonNull(greekGroundComboBox.getSelectedItem()).toString().charAt(0));
+
+		enigma.resetPlugboard();
+		Scanner in = new Scanner(plugboardInput.getText());
+		while(in.hasNext()) {
+			String wire = in.next();
+			if(wire.length() == 2) {
+				char src = wire.charAt(0);
+				char dest = wire.charAt(1);
+				if(enigma.isNotPlugged(src) && enigma.isNotPlugged(dest) && src != dest){
+					enigma.addPlugboardWire(src, dest);
+				}
+			}
+		}
+		in.close();
+	}
+
+	/**
+	 * Updates the alphabet cycle for all stateField(s)
+	 */
+	private void updateStates() {
+		if("M4".equals(mType)){
+			greekStateField.setText(enigma.getGreekRotor().getRotorHead() + "");
+		}
+		leftStateField.setText(enigma.getLeftRotor().getRotorHead() + "");
+		midStateField.setText(enigma.getMidRotor().getRotorHead() + "");
+		rightStateField.setText(enigma.getRightRotor().getRotorHead() + "");
 	}
 }

@@ -1,7 +1,5 @@
 package machine;
 
-import java.lang.Math;
-
 public class Rotor {
 	private int rotorHead;
 	private int ringHead;
@@ -17,7 +15,7 @@ public class Rotor {
 	 * @param notch1 1st turnover notch
 	 * @param notch2 2nd turnover notch
 	 */
-	protected Rotor(String str, char notch1, char notch2) {
+	Rotor(String str, char notch1, char notch2) {
 		this.notch1 = notch1;
 		this.notch2 = notch2;
 		for(int i = 0;i < 26;i++) {
@@ -36,7 +34,7 @@ public class Rotor {
 	 * @param str	Rotor string
 	 * @param notch Turnover notch
 	 */
-	protected Rotor(String str, char notch) {
+	Rotor(String str, char notch) {
 		notch1 = notch;
 		for(int i = 0;i < 26;i++) {
 			int src = (char)('A' + i);
@@ -53,7 +51,7 @@ public class Rotor {
 	 * Used to build Greek rotors
 	 * @param str Rotor string
 	 */
-	protected Rotor(String str) {
+	Rotor(String str) {
 		notch1 = '\0';
 		for(int i = 0;i < 26;i++) {
 			int src = (char)('A' + i);
@@ -64,15 +62,6 @@ public class Rotor {
 				cipher[i] = (26 - (src - dest)) % 26;
 			revCipher[(cipher[i] + i) % 26] = cipher[i];
 		}
-	}
-	
-	/**
-	 * Initialize rotor head and rotor position
-	 * @param c Letter on the rotor
-	 */
-	public void setRotorHead(char c) {
-		rotorHead = c - 'A';
-		position = 0;
 	}
 	
 	/**
@@ -87,7 +76,7 @@ public class Rotor {
 	 * Returns notch
 	 * @return char Returns notch of current rotor
 	 */
-	public char getNotch() {
+	char getNotch() {
 		//Checking for rotors VI, VII and VIII
 		if(this.notch2 == '?')
 			return this.notch1;
@@ -108,17 +97,18 @@ public class Rotor {
 	}
 	
 	/**
-	 * Returns the letter on ring head
-	 * @return char This returns the letter on the ring head
+	 * Initialize rotor head and rotor position
+	 * @param c Letter on the rotor
 	 */
-	public char getRingHead() {
-		return (char)('A' + (ringHead + position) % 26);
+	public void setRotorHead(char c) {
+		rotorHead = c - 'A';
+		position = 0;
 	}
-	
+
 	/**
 	 * Rotates rotor after encrypting letter
 	 */
-	protected void rotate() {
+	void rotate() {
 		position = (position + 1) % 26;
 	}
 	
@@ -127,7 +117,7 @@ public class Rotor {
 	 * @param pos Position to be moved forward
 	 * @return Returns rotated position
 	 */
-	protected int convertForward(int pos) {
+	int convertForward(int pos) {
 		int diff;
 		if(rotorHead >= ringHead)
 			diff = rotorHead - ringHead;
@@ -141,7 +131,7 @@ public class Rotor {
 	 * @param pos Position to be moved backward
 	 * @return Returns rotated position
 	 */
-	protected int convertBackward(int pos) {
+	int convertBackward(int pos) {
 		int diff;
 		if(rotorHead >= ringHead)
 			diff = rotorHead - ringHead;
@@ -157,7 +147,7 @@ public class Rotor {
 	/**
 	 * Resets rotor position
 	 */
-	public void reset() {
+	void reset() {
 		position = 0;
 	}
 }

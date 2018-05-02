@@ -1,15 +1,6 @@
 package machine;
 
 public class Enigma {
-	//Machine configuration
-	private String machineType;
-	private Rotor rightRotor;
-	private Rotor midRotor;
-	private Rotor leftRotor;
-	private Rotor greekRotor;
-	private Reflector reflector;
-	private int[] plugboard;
-	
 	//Available rotors
 	public static final String[] I = {"EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q"};
 	public static final String[] II = {"AJDKSIRUXBLHWTMCQGZNPYFVOE", "E"};
@@ -22,14 +13,20 @@ public class Enigma {
 	//Greek rotors for M4 machine
 	public static final String BETA = "LEYJVCNIXWPBQMDRTAKZGFUHOS";
 	public static final String GAMMA = "FSOKANUERHMBTIYCWLQPZXVGJD";
-	
 	//Available reflectors
 	public static final String B = "YRUHQSLDPXNGOKMIEBFZCWVJAT";
 	public static final String C = "FVPJIAOYEDRZXWGCTKUQSBNMHL";
 	//Thin reflectors for M4 machine
 	public static final String B_THIN = "ENKQAUYWJICOPBLMDXZVFTHRGS";
 	public static final String C_THIN = "RDOBJNTKVEHMLFCWZAXGYIPSUQ";
-	
+	//Machine configuration
+	private String machineType;
+	private Rotor rightRotor;
+	private Rotor midRotor;
+	private Rotor leftRotor;
+	private Rotor greekRotor;
+	private Reflector reflector;
+	private int[] plugboard;
 	private StringBuilder sb = new StringBuilder();
 	
 	
@@ -98,10 +95,8 @@ public class Enigma {
 	 * @param right Right rotor
 	 * @return boolean This returns true if selected rotors are distinct, and false otherwise
 	 */
-	public static boolean isDistinct(String[] left, String[] mid, String[] right) {
-		if(left[0].equals(mid[0]) || left[0].equals(right[0]) || mid[0].equals(right[0]))
-			return false;
-		return true;
+	public static boolean isNotDistinct(String[] left, String[] mid, String[] right) {
+		return left[0].equals(mid[0]) || left[0].equals(right[0]) || mid[0].equals(right[0]);
 	}
 	
 	/**
@@ -206,23 +201,14 @@ public class Enigma {
 		this.plugboard[a - 'A'] = b - 'A';
 		this.plugboard[b - 'A'] = a - 'A';
 	}
-	
-	/**
-	 * Removes an existing connection for a given character
-	 * @param c Letter to be removed from the plugboard
-	 */
-	public void removePlugboardWire(char c) {
-		this.plugboard[this.plugboard[c - 'A']] = -1;
-		this.plugboard[c - 'A'] = -1;
-	}
-	
+
 	/**
 	 * Check whether a character is already connected
 	 * @param c Letter to be checked
 	 * @return boolean This returns true if letter is already connected, else returns false
 	 */
-	public boolean isPlugged(char c) {
-		return plugboard[c - 'A'] != -1;
+	public boolean isNotPlugged(char c) {
+		return plugboard[c - 'A'] == -1;
 	}
 	
 	/**
