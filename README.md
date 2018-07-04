@@ -1,7 +1,5 @@
 # EnigmaMachineSimulator
-Enigma Machine Simulator in Java (Swing GUI) and Android (Java)
-
-The Java version of this repo was done as a course project under IT206 course
+Enigma Machine Simulator in Java (Swing GUI)
 
 Goto "src" folder and run Main.java normally in terminal or IDE
 
